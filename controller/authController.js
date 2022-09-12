@@ -34,7 +34,7 @@ export const loginUser = async (req, res) => {
 
         if (!isPasswordCorrect)  return res.status(404).send("User or password is not correct")
 
-        const token = newCookie(req, res, user);
+        const token = newCookie(user);
 
         return res.
             cookie("session_token", token, {

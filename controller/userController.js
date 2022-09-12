@@ -1,4 +1,7 @@
+import jwt from 'jsonwebtoken';
+import { verifySessionToken } from '../authCheck/authCheck.js';
 import userModel from '../models/userModel.js';
+import { newCookie } from '../utils/cookieManagment.js';
 
 
 export const getAllUsers =  async (req, res) => {
@@ -60,8 +63,25 @@ export const revokeAdmin = async (req, res) => {
         if (!user.isAdmin) return res.status(405).send(`${user.userName} is not an admin`);
 
         const updatedUser = await userModel.findByIdAndUpdate(req.params.id, {isAdmin: false}, {new: true})
-        res.status(200).send(`${user.userName} admin rights were revoked`)
+
+        const newToken = newCookie(updateUser);
+        const token = req.cookies.session_token;
+
+
+        jwt.verify(token, process.env.KEY_GEN, (error, decoded) => {
+            if(req.params.id == decoded.id)  {
+              return res.
+              cookie("session_token", newToken, {
+              httpOnly: true,
+              }).status(201)
+              .send(`Your admin rights were revoked`);
+            }
+        })     
+
+        return res.status(201).send(`${user.userName} admin rights were revoked`);
+        
     }
+
     catch (error) {
         console.log(error)
     }

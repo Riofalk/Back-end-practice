@@ -13,7 +13,7 @@ router.delete("/delete/:id", verifySessionToken, deleteUserById)
 
 router.patch("/patch/revokeAdmin/:id", verifySessionTokenAdmin, revokeAdmin)
 
-router.put("/put/:id", verifySessionToken, verifySessionTokenAdmin, updateUser)
+router.put("/put/:id", verifySessionToken, updateUser)
 
 router.delete("/deleteAllUsers", verifySessionTokenAdmin,  deleteAllUsers)
 

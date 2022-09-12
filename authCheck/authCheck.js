@@ -2,12 +2,12 @@ import jwt  from "jsonwebtoken";
 
 const verifyUser = (req, res, next) => {
     if (req.user.id === req.params.id)  return next();
-    return res.status(406).send("Trying to alter others information")
+    res.status(406).send("Trying to alter others information")
 }
 
 const verifyAdmin = (req, res, next) => {
     if (req.user.isAdmin) return next();
-    return res.status(406).send("You are not an admin")
+    res.status(406).send("You are not an admin")
 }
 
 export const verifySessionToken = (req, res, next) => {
