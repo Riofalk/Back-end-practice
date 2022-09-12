@@ -1,27 +1,9 @@
 import userModel from '../models/userModel.js';
-import bcrypt from "bcrypt"
 
-export const createUser = async (req, res) => {
-    try {
-        const salt = bcrypt.genSaltSync(10);
-        const hash = bcrypt.hashSync(req.body.password, salt)
-        const newUser = new userModel({
-            ... req.body,
-            password: hash,
-        })
-        
-        await newUser.save();
-        res.status(201).send('User is created')
-    }
-    catch (error) {
-        res.status(405).send(error.message);
-    }
-}
 
 export const getAllUsers =  async (req, res) => {
     try {
         const allUsers = await userModel.find({}, {password: 0});
-        const { password, ...users} = allUsers;
         res.status(202).json(allUsers)
     }
     catch (error) {
@@ -66,6 +48,19 @@ export const deleteAllUsers = async (req, res) => {
         const allUsers = await userModel.find();
         allUsers.forEach(async (user) => await userModel.findOneAndDelete({ _id: user.id}))
         res.status(200).send("All users deleted successfully")
+    }
+    catch (error) {
+        console.log(error)
+    }
+}
+
+export const revokeAdmin = async (req, res) => {
+    try {
+        const user = await userModel.findById(req.params.id);
+        if (!user.isAdmin) return res.status(405).send(`${user.userName} is not an admin`);
+
+        const updatedUser = await userModel.findByIdAndUpdate(req.params.id, {isAdmin: false}, {new: true})
+        res.status(200).send(`${user.userName} admin rights were revoked`)
     }
     catch (error) {
         console.log(error)

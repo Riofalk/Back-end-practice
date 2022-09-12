@@ -17,6 +17,10 @@ const userSchema = new mongoose.Schema( {
     city: {
         type: String,
     },
+    isAdmin: {
+        type: Boolean,
+        default: false,
+    },
     }, {timestamps: true});
 
 export default mongoose.model('user', userSchema)
