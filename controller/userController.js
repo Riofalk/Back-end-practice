@@ -38,6 +38,17 @@ export const deleteUserById = async (req, res) => {
 
 export const updateUser = async (req, res) => {
     try {
+
+        const token = req.cookies.session_token;
+
+        jwt.verify(token, process.env.KEY_GEN, (error, decoded) => {
+            req.user = decoded;
+        })  
+
+        if(!(req.user.isAdmin) & req.body.isAdmin) {
+          return res.status(404).send("Cannot change such information: you're not an admin")
+        }
+
         const updatedUser = await userModel.findByIdAndUpdate(req.params.id, {$set: req.body}, {new: true})
         res.status(200).json(updatedUser)
     }
